@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="template">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Mini Projet | Create New Course </title>
+	<link rel="stylesheet" type="text/css" href="webjars/bootstrap/5.1.3/css/bootstrap.min.css" />
+	<c:url value="/css/main.css" var="jstlCss" />
+	<link href="${jstlCss}" rel="stylesheet" />
+</head>
+
+<body>
+	<div th:replace="~{partials/nav-bar}"></div>
+
+
+	<div class="container mt-5">
+		<div th:if="${error}">
+			<div class="alert alert-danger mb-4" role="alert" th:text="${error}"></div>
+		</div>
+
+		<form th:action="@{manageCourse(page = ${currentPage})}" method="POST">
+			<div th:if="${mode == 'edit'}">
+				<div class="form-floating mb-3">
+					<input type="text" name="courseId" th:field="${courseInfo.courseId}" class="form-control"
+						id="floatingInput" placeholder="Course ID" hidden>
+					<label for="floatingInput">Course ID</label>
+				</div>
+			</div>
+			<div class="form-floating mb-3">
+				<input type="text" th:field="${courseInfo.courseName}" name="courseName" class="form-control"
+					id="floatingInput" placeholder="The Course Name">
+				<label for="floatingInput"> Course Name </label>
+				<span th:errors=${course.courseName} class="text-danger"
+					style="font-weight: bold; font-family: cursive;"></span>
+			</div>
+			<div class="form-floating mb-3">
+				<textarea th:field="${courseInfo.courseDesc}" name="courseDesc" style="height: 173px;"
+					class="form-control" id="floatingInput" placeholder="The Course Description"></textarea>
+				<label for="floatingInput"> Course Description </label>
+				<span th:errors=${course.courseDesc} class="text-danger"
+					style="font-weight: bold; font-family: cursive;"></span>
+			</div>
+
+			<div th:if="${mode == 'new'}">
+				<div class="form-floating mb-3">
+					<select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+						name="teacher">
+						<option th:each="teacher : ${teachers}" th:value="${teacher.teacherId}"
+							th:text="${teacher.firstName} + ' ' + ${teacher.lastName}"></option>
+					</select>
+					<label for="floatingSelect">Teacher</label>
+				</div>
+
+				<div class="form-floating mb-3">
+					<select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+						name="speciality">
+						<option th:each="speciality : ${specialities}" th:value="${speciality.specialityId}"
+							th:text="${speciality.specialityName}"></option>
+					</select>
+					<label for="floatingSelect">Speciality</label>
+				</div>
+			</div>
+
+			<div th:if="${mode == 'edit'}">
+				<div class="form-floating mb-3">
+					<select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+						name="teacher">
+						<option th:value="${currentTeacher.teacherId}"
+							th:text="${currentTeacher.firstName } + ' ' + ${currentTeacher.lastName}" selected></option>
+						<div th:each="teacher : ${teachers}">
+							<div th:if="${currentTeacher.teacherId != teacher.teacherId}">
+								<option th:value="${teacher.teacherId}"
+									th:text="${teacher.firstName} + ' ' + ${teacher.lastName}"></option>
+							</div>
+						</div>
+
+					</select>
+					<label for="floatingSelect">Teacher</label>
+				</div>
+
+				<div class="form-floating mb-3">
+					<select class="form-select" id="floatingSelect" aria-label="Floating label select example"
+						name="speciality">
+						<option th:value="${currentSpeciality.specialityId}"
+							th:text="${currentSpeciality.specialityName}" selected></option>
+						<div th:each="speciality : ${specialities}">
+							<div th:if="${currentSpeciality.specialityId != speciality.specialityId}">
+								<option th:value="${speciality.specialityId}" th:text="${speciality.specialityName}">
+								</option>
+
+							</div>
+						</div>
+
+					</select>
+					<label for="floatingSelect">Speciality</label>
+				</div>
+			</div>
+			<div th:if="${mode == 'new'}">
+				<button type="submit" class="btn btn-primary form-control">Add Course</button>
+
+			</div>
+
+			<div th:if="${mode == 'edit'}">
+				<button type="submit" class="btn btn-primary form-control">Save Changes</button>
+
+			</div>
+		</form>
+
+	</div>
+	<script type="text/javascript" src="webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+</body>
+
+</html>

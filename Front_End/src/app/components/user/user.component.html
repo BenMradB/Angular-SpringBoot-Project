@@ -1,0 +1,308 @@
+<div class="container mt-5" style="height: 412px;
+overflow: auto;
+padding-top: 10px;">
+
+  <div class=" mb-5" style="width: 100%">
+    <form class=" my-2 my-lg-0" style="width: 100%; position: relative" #searchForm="ngForm">
+      <input class="form-control mr-sm-2" style="font-weight: bold;" type="text" ngModel name="username"
+        placeholder="Search By Username" aria-label="Search">
+      <button style="position: absolute; right: 0; bottom: 0; width: 10%" class="btn btn-success my-2 my-sm-0"
+        type="submit" (click)="search(searchForm)">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </form>
+  </div>
+  <div class="mb-3" *ngIf="isAdmin">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add">
+      <i class="fa-sharp fa-solid fa-plus"></i>
+
+    </button>
+  </div>
+
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Username</th>
+        <th scope="col" *ngIf="isAdmin">Grant Role</th>
+        <th scope="col" *ngIf="isAdmin">Revoke Role</th>
+        <th scope="col" *ngIf="isAdmin">Update</th>
+        <th scope="col" *ngIf="isAdmin">Delete</th>
+
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users;">
+        <th scope="row"> {{user.user_id}} </th>
+        <td> {{user.username}} </td>
+        <td>
+          <button *ngIf="isAdmin" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#grant"
+            (click)="getUser(user)">
+            <i class="fa-solid fa-user-plus text-success" style="font-size: 20px;"></i>
+          </button>
+        </td>
+        <td>
+
+          <button *ngIf="isAdmin" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#revoke"
+            (click)="getUser(user)">
+            <i class="fa-solid fa-user-minus text-danger" style="font-size: 20px;"></i>
+          </button>
+        </td>
+        <td>
+          <button *ngIf="isAdmin" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#update"
+            (click)="getUser(user)">
+            <i class="fa-solid fa-pen-to-square text-success" style="font-size: 20px;"></i>
+          </button>
+        </td>
+        <td>
+          <button *ngIf="isAdmin" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#delete"
+            (click)="getUser(user)">
+            <i class="fa-solid fa-trash text-danger" style="font-size: 20px;"></i>
+          </button>
+        </td>
+
+
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="add" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add A New User ⭐</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form #addForm="ngForm">
+          <div class="modal-body">
+
+            <div class="form-floating mb-3">
+              <input type="text" ngModel class="form-control" name="username" id="floatingInput"
+                placeholder="name@example.com">
+              <label for="floatingInput">Username</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="password" ngModel class="form-control" name="password" id="floatingInput"
+                placeholder="name@example.com">
+              <label for="floatingInput">Password</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <div class="form-check">
+                <input class="form-check-input" ngModel value="true" type="radio" name="enabled" id="flexRadioDefault1"
+                  checked>
+                <label class="form-check-label" for="flexRadioDefault1">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" ngModel value="false" type="radio" name="enabled"
+                  id="flexRadioDefault2">
+                <label class="form-check-label" for="flexRadioDefault2">
+                  No
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="addClose" data-bs-dismiss="modal">Close</button>
+            <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary" (click)="addUser(addForm)">Add
+              Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="update" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Update The <b>
+              < {{user?.username}}>
+            </b> User ✔</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form #editForm="ngForm" (ngSubmit)="updateUser(editForm.value)">
+          <div class="modal-body">
+            <div class="form-floating mb-3" hidden>
+              <input type="text" ngModel="{{user?.user_id}}" class="form-control" name="user_id" id="floatingInput"
+                placeholder="name@example.com">
+              <label for="floatingInput">User Id</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" ngModel="{{user?.username}}" class="form-control" name="username" id="floatingInput"
+                placeholder="name@example.com">
+              <label for="floatingInput">User Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="password" ngModel class="form-control" name="password" id="floatingInput"
+                placeholder="name@example.com">
+              <label for="floatingInput">Password</label>
+            </div>
+            <div class="form-floating mb-3">
+              <strong>Account Enabled ?</strong>
+
+              <div *ngIf="user?.enabled">
+                <div class="form-check">
+                  <input class="form-check-input" value="true" type="radio" name="enabled" [checked]="true"
+                    id="flexRadioDefault1">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" ngModel value="false" checked type="radio" name="enabled"
+                    id="flexRadioDefault2">
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    No
+                  </label>
+                </div>
+              </div>
+
+              <div *ngIf="!user?.enabled">
+                <div class="form-check">
+                  <input class="form-check-input" value="true" type="radio" name="enabled" id="flexRadioDefault1">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" ngModel value="false" checked type="radio" name="enabled"
+                    id="flexRadioDefault2" checked>
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    No
+                  </label>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="updateClose" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="delete" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Delete The<b>
+              < {{user?.username}}>
+            </b> Role ❌ </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are You Sure About This Action ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="deleteClose" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" (click)="deleteRole(user!.user_id)">Delete Anyway</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="grant" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Grant Roles To<b>
+              < {{user?.username}}>
+            </b> ✔️ </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let role of user?.roles">
+                  <tr>
+                    <td> {{role.role_id}} </td>
+                    <td> {{role.role}} </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <form #grantForm="ngForm">
+            <div class="form-floating mb-3">
+              <select class="form-select" id="floatingSelect" aria-label="Floating label select example" ngModel
+                name="role">
+                <option *ngFor="let role of roles" [value]="role.role_id"> {{role?.role}} </option>
+              </select>
+              <label for="floatingSelect">Role</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="deleteClose" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" (click)="grantRoleToUser(user!.user_id, grantForm)">Grant
+            Role</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="revoke" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Revoke Roles From<b>
+              < {{user?.username}}>
+            </b> ❌ </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Role</th>
+                    <th>Revoke</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let role of user?.roles">
+                  <tr>
+                    <td> {{role.role_id}} </td>
+                    <td> {{role.role}} </td>
+                    <td>
+                      <button type="button" class="btn">
+                        <i class="fa-solid fa-trash text-danger" (click)="revokeRoleFromUser(user!.user_id, role)" style="font-size: 20px;"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

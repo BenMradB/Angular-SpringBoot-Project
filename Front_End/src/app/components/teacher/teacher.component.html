@@ -1,0 +1,265 @@
+<div class="container mt-5"
+style="height: 412px;
+overflow: auto;
+padding-top: 10px;">
+
+  <div class=" mb-5" style="width: 100%">
+    <form class=" my-2 my-lg-0" style="width: 100%; position: relative" #form="ngForm">
+      <input class="form-control mr-sm-2" style="font-weight: bold;" type="text" ngModel name="userName" placeholder="Search By The Teacher User Name" aria-label="Search">
+      <button style="position: absolute; right: 0; bottom: 0; width: 10%" class="btn btn-success my-2 my-sm-0" type="submit" (click)="search(form)">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </form>
+  </div>
+  <div class="mb-3" *ngIf="isAdmin">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacher">
+      <i class="fa-sharp fa-solid fa-plus"></i>
+    </button>
+  </div>
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Profile Picture</th>
+        <th scope="col">User Name</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Email</th>
+        <th scope="col" *ngIf="isAdmin">Update</th>
+        <th scope="col" *ngIf="isAdmin">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let teacher of teachers;">
+        <th scope="row">
+          <!-- src="{{uploadApiServerUrl+'/image/loadFromFS/'+teacher.teacherId}}" -->
+          <img
+            class="card-img-top img-responsive"
+            src="{{teacher.imageStr}}"
+            style="height: 50px; width: 50px; border-radius: 50%"
+          >
+        </th>
+        <td> {{teacher.userName}} </td>
+        <td> {{teacher.firstName}} </td>
+        <td> {{teacher.lastName}} </td>
+        <td> {{teacher.email}} </td>
+        <td *ngIf="isAdmin">
+          <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#updateTeacher" (click)="getTeacherForUpdate(teacher)">
+            <i class="fa-solid fa-pen-to-square text-success" style="font-size: 20px;"></i>
+          </button>
+        </td>
+        <td *ngIf="isAdmin">
+          <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteTeacher" (click)="getTeacher(teacher)">
+            <i class="fa-solid fa-trash text-danger" style="font-size: 20px;"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="addTeacher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add A New Teacher ⭐</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form #addForm="ngForm">
+          <div class="modal-body">
+
+            <div class="col-sm-16 col-md-16 col-lg-16 mb-2">
+              <img [src]="imagePath" class="card-img-top img-responsive" style="
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                margin-left: 25%;
+              " />
+            </div>
+
+            <div class="col-sm-16 col-md-16 col-lg-16 mb-3">
+              <input type="file" (change)="onImageUpload($event, 'new')" ngModel name="image" class="form-control">
+            </div>
+
+
+            <div class="form-floating mb-3">
+              <input type="text" ngModel class="form-control" name="firstName" id="floatingInput" placeholder="name@example.com">
+              <label for="floatingInput">First Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" ngModel class="form-control" name="lastName" id="floatingInput" placeholder="name@example.com">
+              <label for="floatingInput">Last Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="text" ngModel class="form-control" name="userName" id="floatingInput" placeholder="name@example.com">
+              <label for="floatingInput">User Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="email" ngModel class="form-control" name="email" id="email" placeholder="name@example.com">
+              <label for="floatingInput">Email address</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="password" ngModel class="form-control" name="password" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="date" ngModel class="form-control" name="birthday" id="floatingPassword" placeholder="Date Of Birth">
+              <label for="floatingPassword">Date Of Birth</label>
+            </div>
+            <div class="form-floating mb-3" hidden>
+              <input type="text"  ngModel="teacher" class="form-control" name="role" id="floatingPassword" placeholder="Role">
+              <label for="floatingPassword">Role</label>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="addClose" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" (click)="addTeacher(addForm)">Add Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+<div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="updateTeacher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Teacher : <b> {{teacher?.userName}} </b> ✔</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form #editForm="ngForm">
+        <div class="modal-body">
+
+          <div class="col-sm-16 col-md-16 col-lg-16 mb-2">
+            <img [src]="myImage" class="card-img-top img-responsive" style="
+              width: 200px;
+              height: 200px;
+              border-radius: 50%;
+              margin-left: 25%;"
+            />
+          </div>
+
+          <div class="col-sm-16 col-md-16 col-lg-16 mb-3">
+            <div style="display: flex;
+            align-items: center;">
+              <input type="file" (change)="onImageUpload($event, 'edit')" ngModel name="image" class="form-control" style="    position: relative;
+              width: 100%;
+              border-top-right-radius: 0;
+              border-bottom-right-radius: 0;">
+              <div class="mt-2">
+                <button type="submit" (click)="onAddTeacherImage()" class="btn btn-primary" style="
+                  position: relative;
+                  bottom: 4px;
+                  border-top-left-radius: 0;
+                  border-bottom-left-radius: 0;"
+                >
+                  <i class="fa-sharp fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Images</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody *ngFor="let img of teacher?.images">
+                    <tr>
+                      <td>
+                        <img
+                          class="card-img-top img-responsive"
+                          src="{{'data:' + img.imageType + ';base64,' + img.image}}"
+                          style="height :50px; width:50px; border-radius: 50%"
+                        >
+
+                      </td>
+
+                      <td>
+                        <button type="button" class="btn">
+                          <i class="fa-solid fa-trash text-danger" (click)="deleteImage(img)" style="font-size: 20px;"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3" hidden>
+            <input type="text" ngModel ngModel="{{teacher?.teacherId}}" class="form-control" name="teacherId" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">Teacher Id</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text"  ngModel="{{teacher?.userName}}" class="form-control" name="userName" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">User Name</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text"  ngModel="{{teacher?.firstName}}" class="form-control" name="firstName" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">First Name</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="text"  ngModel="{{teacher?.lastName}}" class="form-control" name="lastName" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">Last Name</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="email" ngModel="{{teacher?.email}}" class="form-control" name="email" id="email" placeholder="name@example.com">
+            <label for="floatingInput">Email address</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" ngModel class="form-control" name="password" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="date"  ngModel="{{teacher?.birthday}}" class="form-control" name="birthday" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword">Date Of Birth</label>
+          </div>
+
+          <div class="form-floating mb-3" hidden>
+            <input type="text"  ngModel="teacher" class="form-control" name="role" id="floatingPassword" placeholder="Role">
+            <label for="floatingPassword">Role</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="updateClose" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success" (click)="updateTeacher(editForm.value)">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" style="background: rgba(0, 0, 0, 0.089);" id="deleteTeacher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Teacher : <b> {{teacher?.userName}} ❌</b></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are You Sure About This Action ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="deleteClose" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" (click)="deleteTeacher(teacher!.teacherId)">Delete Anyway</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
